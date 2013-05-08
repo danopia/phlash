@@ -165,18 +165,18 @@ function initialize() {
             position: pos,
             title: stop[3],
             zIndex: 20,
+            clickable: false,
             map: $.map});
           var marker2 = new google.maps.Marker({
             icon: icon2,
             position: pos,
             title: stop[3],
             zIndex: 25,
+            clickable: false,
             map: $.map});
           
           $.stops[stop[0]].markerNumb1 = marker1;
           $.stops[stop[0]].markerNumb2 = marker2;
-          google.maps.event.addListener(marker1, 'click', $.stops[stop[0]].handler);
-          google.maps.event.addListener(marker2, 'click', $.stops[stop[0]].handler);
         });
       });
       
