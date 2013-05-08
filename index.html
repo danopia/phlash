@@ -21,33 +21,59 @@
 		<style type="text/css">
 		
 		html { 
-  			background: url(assets/phlashback.jpg) no-repeat center center fixed; 
-  			-webkit-background-size: cover;
-  			-moz-background-size: cover;
-  			-o-background-size: cover;
-  			background-size: cover;
-  			background-position: center 90%;
+			background-image: url(assets/phlashback.jpg);
+			background-repeat: no-repeat;
+			background-position: center center !important;
+			background-attachment: scroll; 
+			-webkit-background-size: cover !important;
+			-moz-background-size: cover !important;
+			-o-background-size: cover !important;
+			background-size: cover !important;
+			height: 100% !important;
 		}
 		
 		body{
 			background: rgba(255,255,255,0.6);
-			min-height: 100%;
-			/*#26225f philly phlash dark blue*/
 		}	
 
-		img {
+		img.logo {
+			display: block;
 			margin-left: auto;
 			margin-right: auto;
 			padding: 20px;
 		}
+
+		@media (min-width: 768px) {
+			.social > .columns > * {
+				display: block;
+				margin-left: 40%;
+			}
+		}
+
+		@media (max-width: 767px) {
+			.social > .columns > * {
+				display: block;
+				margin-left: 25%
+			}
+		}
 		</style>
+
+		<div id="fb-root"></div>
+		<script>(function(d, s, id) {
+		  var js, fjs = d.getElementsByTagName(s)[0];
+		  if (d.getElementById(id)) return;
+		  js = d.createElement(s); js.id = id;
+		  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+		  fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));</script>
+
+		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 
 	</head>
 	<body>
-		<div class="background">
 		<div class="row">
 			<div class="small-12 columns small-centered">
-				<img src="assets/logo.png"/>
+				<img class="logo" src="assets/logo.png"/>
 			</div>
 		</div>
 		<div class="row">
@@ -62,16 +88,18 @@
 		</div>
 		<div class="row">
 			<div class="small-12 columns">
-				<a href="http://www.visitphilly.com/tours/philadelphia/phlash/" class="button small expand" target="_blank">Visitor Center Website</a>				
+				<a href="http://www.phlvisitorcenter.com/" class="button small expand" target="_blank">Visitor Center Website</a>				
 			</div>
 		</div>
 		<div class="row">
+			<div class="small-12 columns social">
 			<div class="small-6 columns">
-				<a href="https://www.facebook.com/sharer/sharer.php?u=dorm.danopia.net/phlash/" class="button small expand" target="_blank"><i class="foundicon-facebook"></i> Share</a>				
+				<div class="fb-like" data-href="http://ridephillyphlash.com" data-send="false" data-layout="button_count" data-width="900" data-show-faces="false" data-font="arial"></div>
 			</div>
 			<div class="small-6 columns">
-				<a href="https://twitter.com/share" class="button small expand" target="_blank"><i class="foundicon-twitter"></i> Share</a>				
+				<a href="https://twitter.com/share" class="twitter-share-button" target="_blank"></a>				
 			</div>
+		</div>
 		</div>
 		
 		<script type="text/javascript">
