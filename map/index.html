@@ -102,37 +102,31 @@ function initialize() {
       $.data = data;
       $.stops = {};
       
-      var circley = {
-        path: google.maps.SymbolPath.CIRCLE,
-        fillColor: data.colors.stopicon,
-        fillOpacity: 0.8,
-        scale: 10,
-        strokeColor: "black",
-        strokeWeight: 1};
-        
-      var helpy = {
-        path: 'M 15,0 C 6.7157286,0 0,6.7158 0,15 0,23.2842 6.7157286,30 15,30 23.284271,30 30,23.2842 30,15 30,6.7158 23.284271,0 15,0 z m 0,2.367 c 6.976228,0 12.631579,5.6553 12.631579,12.6315 C 27.631579,21.9747 21.976228,27.63 15,27.63 8.0237724,27.63 2.3684211,21.9747 2.3684211,14.9985 2.3684211,8.0223 8.0237724,2.367 15,2.367 z m 0.13158,1.446 c -1.598718,0 -2.894736,1.296 -2.894736,2.895 0,1.599 1.296018,2.895 2.894736,2.895 1.598718,0 2.894736,-1.296 2.894736,-2.895 0,-1.599 -1.296018,-2.895 -2.894736,-2.895 z m -5,6.9738 0,2.499 1.710525,0 c 0.657894,0 0.789474,0.396 0.789474,1.053 l 0,6.8421 c 0,0.657 -0.26316,1.053 -0.921051,1.053 l -1.578948,0 0,2.631 10.131579,0 0,-2.631 -1.315791,0 c -0.657894,0 -1.052631,-0.396 -1.052631,-1.053 l 0,-10.3947 -7.763158,0 z',
-        fillColor: '#ef59a1',
-        fillOpacity: 0.8,
-        anchor: new google.maps.Point(15, 15),
-        strokeWeight: 0.5};
-      
       data.stops.forEach(function (stop) {
+        var icon = {
+          path: 'M 12 0 C 5.372583 3.5527137e-15 0 5.372583 0 12 L 0 24 L 12 24 C 18.627417 24 24 18.627417 24 12 C 24 5.372583 18.627417 -3.4416914e-15 12 0 z',
+          anchor: new google.maps.Point(12, 12),
+          fillColor: data.colors.stopicon[(stop[2] > 180) ? 1 : 0],
+          fillOpacity: 0.8,
+          strokeColor: "black",
+          rotation: stop[2],
+          strokeWeight: stop[4] ? 3 : 1};
+          
         var pos = new google.maps.LatLng(stop[1][0], stop[1][1]);
         var marker = new google.maps.Marker({
-          icon: circley,
+          icon: icon,
           position: pos,
-          title: stop[2],
+          title: stop[3],
+          zIndex: 15,
           map: $.map});
         
-        $.stops[stop[0]] = {coords: stop[1], name: stop[2], marker: marker};
-
-        google.maps.event.addListener(marker, 'click', function() {
-          var body = '<h2>' + stop[2] + '</h2>';
+        $.stops[stop[0]] = {coords: stop[1], name: stop[3], marker: marker};
+        $.stops[stop[0]].handler = function() {
+          var body = '<h2>Stop ' + stop[0] + ': ' + stop[3] + '</h2>';
           
-          body += '<p><a href="https://maps.google.com/maps?daddr=Phlash+Stop+' + stop[0] + '+at+' + encodeURIComponent(stop[2]) + '%40' + stop[1][0] + ',' + stop[1][1] + '" target="_blank">Directions</a></p>';
+          body += '<p><a href="https://maps.google.com/maps?daddr=Phlash+Stop+' + stop[0] + '+at+' + encodeURIComponent(stop[3]) + '%40' + stop[1][0] + ',' + stop[1][1] + '" target="_blank">Directions</a></p>';
           
-          if (stop[3]) body += '<p>' + stop[3] + '</p>';
+          if (stop[4]) body += '<p>' + stop[4] + '</p>';
           
           body += '<p>Nearby:</p><ul>';
           $.data.pois.forEach(function (poi) {
@@ -147,6 +141,42 @@ function initialize() {
           $.popup.open($.map, marker);
           
           $.routeTo(pos);
+        };
+        google.maps.event.addListener(marker, 'click', $.stops[stop[0]].handler);
+      });
+      
+      $.get('labels.txt', function (labels) {
+        var texts = labels.split('\n');
+        
+        data.stops.forEach(function (stop) {
+          var icon = {
+            path: texts[stop[0] - 1],
+            strokeWeight: 1,
+            strokeColor: 'black'};
+          var icon2 = {
+            path: texts[stop[0] - 1],
+            strokeWeight: 0,
+            fillOpacity: 1,
+            fillColor: data.colors.stopnumb};
+            
+          var pos = new google.maps.LatLng(stop[1][0], stop[1][1]);
+          var marker1 = new google.maps.Marker({
+            icon: icon,
+            position: pos,
+            title: stop[3],
+            zIndex: 20,
+            map: $.map});
+          var marker2 = new google.maps.Marker({
+            icon: icon2,
+            position: pos,
+            title: stop[3],
+            zIndex: 25,
+            map: $.map});
+          
+          $.stops[stop[0]].markerNumb1 = marker1;
+          $.stops[stop[0]].markerNumb2 = marker2;
+          google.maps.event.addListener(marker1, 'click', $.stops[stop[0]].handler);
+          google.maps.event.addListener(marker2, 'click', $.stops[stop[0]].handler);
         });
       });
       
@@ -162,6 +192,13 @@ function initialize() {
             map: $.map});
         }, 'json');
       });
+        
+      var helpy = {
+        path: 'M 15,0 C 6.7157286,0 0,6.7158 0,15 0,23.2842 6.7157286,30 15,30 23.284271,30 30,23.2842 30,15 30,6.7158 23.284271,0 15,0 z m 0,2.367 c 6.976228,0 12.631579,5.6553 12.631579,12.6315 C 27.631579,21.9747 21.976228,27.63 15,27.63 8.0237724,27.63 2.3684211,21.9747 2.3684211,14.9985 2.3684211,8.0223 8.0237724,2.367 15,2.367 z m 0.13158,1.446 c -1.598718,0 -2.894736,1.296 -2.894736,2.895 0,1.599 1.296018,2.895 2.894736,2.895 1.598718,0 2.894736,-1.296 2.894736,-2.895 0,-1.599 -1.296018,-2.895 -2.894736,-2.895 z m -5,6.9738 0,2.499 1.710525,0 c 0.657894,0 0.789474,0.396 0.789474,1.053 l 0,6.8421 c 0,0.657 -0.26316,1.053 -0.921051,1.053 l -1.578948,0 0,2.631 10.131579,0 0,-2.631 -1.315791,0 c -0.657894,0 -1.052631,-0.396 -1.052631,-1.053 l 0,-10.3947 -7.763158,0 z',
+        fillColor: '#d363a5', // #ef59a1
+        fillOpacity: 0.8,
+        anchor: new google.maps.Point(15, 15),
+        strokeWeight: 0.5};
       
       data.centers.forEach(function (center) {
         var pos = new google.maps.LatLng(center[0][0], center[0][1]);
@@ -169,6 +206,7 @@ function initialize() {
             icon: helpy,
             position: pos,
             title: center[1],
+            zIndex: 10,
             map: $.map});
         
         google.maps.event.addListener(marker, 'click', function() {
