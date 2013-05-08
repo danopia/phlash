@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Phlash Mobile Map</title>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+
+<style>
+  html, body, #map-canvas {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+  }
+  
+  .popup h2, .popup p { margin: 0; padding: 2px 0; }
+  .popup ul { margin: 0; padding-left: 20px; }
+  
+  .button { overflow: hidden; text-align: center; position: relative; color: rgb(51, 51, 51); font-family: Arial,sans-serif; -moz-user-select: none; font-size: 13px; background: #fff; padding: 1 6px; margin: 10px; border: 1px solid rgb(113, 123, 135); box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4); min-width: 100px; font-weight: bold; }
+  .button:hover { color: #000; background: -moz-linear-gradient(center top , rgb(255, 255, 255), rgb(230, 230, 230)) repeat scroll 0% 0% transparent; }
+  .button a { display: block; height: 35px; line-height: 30px; text-decoration: none; color: rgb(51, 51, 51) !important; }
+  .button a:hover { color: rgb(0, 0, 0) !important; }
+</style>
+
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true"></script>
+
+<script>
+$.directionsService = new google.maps.DirectionsService();
+
+$.routeTo = function (to, maxDist) {
+  if (!($.me) || !($.me.getPosition())) return;
+  
+  if ($.dist($.me.getPosition(), to) > (maxDist || 1.1))
+    return $.directionsDisplay.setMap(null);
+  
+  var request = {
+    origin:      $.me.getPosition(),
+    destination: to,
+    travelMode:  google.maps.DirectionsTravelMode.WALKING};
+  
+  $.directionsService.route(request, function(response, status) {
+    if (status == google.maps.DirectionsStatus.OK) {
+      $.directionsDisplay.setMap($.map);
+      $.directionsDisplay.setDirections(response);
+    };
+  });
+};
+  
+$.popup = new google.maps.InfoWindow({content: ''});
+
+$.me = new google.maps.Marker({
+  draggable: false,
+  animation: google.maps.Animation.DROP
+});
+
+$.updateLoc = function (position) {
+  var pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+  console.log($.dist($.center, pos));
+  
+  if (!$.me.getPosition()) {
+    setTimeout(function () { $.me.setMap($.map); }, 1500);
+    
+    if ($.dist($.center, pos) < 15) {
+      $.map.setCenter(pos);
+      $.map.setZoom(16);
+    };
+  } else if ($.dist($.map.getCenter(), pos) < 0.1) {
+    $.map.setCenter(pos);
+  };
+  
+  $.me.setPosition(pos);
+};
+
+$.dist = function (p1, p2) {
+  var lat1 = p1.lat() * 0.0174532925, lon1 = p1.lng() * 0.0174532925,
+      lat2 = p2.lat() * 0.0174532925, lon2 = p2.lng() * 0.0174532925;
+  return Math.acos(Math.sin(lat1)*Math.sin(lat2) +  Math.cos(lat1)*Math.cos(lat2) * Math.cos(lon2-lon1)) * 6371;
+};
+
+$.center = new google.maps.LatLng(39.957035, -75.169172);
+
+function initialize() {
+  $.map = new google.maps.Map($('#map-canvas')[0], {
+    zoom: 14,
+    minZoom: 13,
+    center: $.center,
+    mapTypeId: google.maps.MapTypeId.ROADMAP});
+  
+  $.directionsDisplay = new google.maps.DirectionsRenderer({
+    preserveViewport: true,
+    suppressMarkers: true,
+    map: $.map});
+
+  if (navigator.geolocation) {
+    //navigator.geolocation.getCurrentPosition($.updateLoc);
+    navigator.geolocation.watchPosition($.updateLoc, function(){}, {timeout: 1000, enableHighAccuracy: true});
+  };
+  
+  var homeControl = $('<div class="button"><a href="..">Home</a></div>');
+  var homeControlDiv = homeControl[0];
+  homeControlDiv.index = 1;
+  $.map.controls[google.maps.ControlPosition.TOP_LEFT].push(homeControlDiv);
+  
+  $(function () {
+    $.get('data.json', function (data) {
+      $.data = data;
+      $.stops = {};
+      
+      var circley = {
+        path: google.maps.SymbolPath.CIRCLE,
+        fillColor: data.colors.stopicon,
+        fillOpacity: 0.8,
+        scale: 10,
+        strokeColor: "black",
+        strokeWeight: 1};
+        
+      var helpy = {
+        path: 'M 15,0 C 6.7157286,0 0,6.7158 0,15 0,23.2842 6.7157286,30 15,30 23.284271,30 30,23.2842 30,15 30,6.7158 23.284271,0 15,0 z m 0,2.367 c 6.976228,0 12.631579,5.6553 12.631579,12.6315 C 27.631579,21.9747 21.976228,27.63 15,27.63 8.0237724,27.63 2.3684211,21.9747 2.3684211,14.9985 2.3684211,8.0223 8.0237724,2.367 15,2.367 z m 0.13158,1.446 c -1.598718,0 -2.894736,1.296 -2.894736,2.895 0,1.599 1.296018,2.895 2.894736,2.895 1.598718,0 2.894736,-1.296 2.894736,-2.895 0,-1.599 -1.296018,-2.895 -2.894736,-2.895 z m -5,6.9738 0,2.499 1.710525,0 c 0.657894,0 0.789474,0.396 0.789474,1.053 l 0,6.8421 c 0,0.657 -0.26316,1.053 -0.921051,1.053 l -1.578948,0 0,2.631 10.131579,0 0,-2.631 -1.315791,0 c -0.657894,0 -1.052631,-0.396 -1.052631,-1.053 l 0,-10.3947 -7.763158,0 z',
+        fillColor: '#ef59a1',
+        fillOpacity: 0.8,
+        anchor: new google.maps.Point(15, 15),
+        strokeWeight: 0.5};
+      
+      data.stops.forEach(function (stop) {
+        var pos = new google.maps.LatLng(stop[1][0], stop[1][1]);
+        var marker = new google.maps.Marker({
+          icon: circley,
+          position: pos,
+          title: stop[2],
+          map: $.map});
+        
+        $.stops[stop[0]] = {coords: stop[1], name: stop[2], marker: marker};
+
+        google.maps.event.addListener(marker, 'click', function() {
+          var body = '<h2>' + stop[2] + '</h2>';
+          
+          body += '<p><a href="https://maps.google.com/maps?daddr=Phlash+Stop+' + stop[0] + '+at+' + encodeURIComponent(stop[2]) + '%40' + stop[1][0] + ',' + stop[1][1] + '" target="_blank">Directions</a></p>';
+          
+          if (stop[3]) body += '<p>' + stop[3] + '</p>';
+          
+          body += '<p>Nearby:</p><ul>';
+          $.data.pois.forEach(function (poi) {
+            if (poi[0].indexOf(stop[0]) !== -1) {
+              var url = (poi[2].indexOf('://') > 0) ? poi[2] : ('http://phlvisitorcenter.com/attraction/' + poi[2]);
+              body += '<li><a href="' + url + '" target="_blank">' + poi[1] + '</a></li>';
+            };
+          });
+          body += '</ul>';
+          
+          $.popup.content = '<div class="popup">' + body + '</div>';
+          $.popup.open($.map, marker);
+          
+          $.routeTo(pos);
+        });
+      });
+      
+      data.routes.forEach(function (route) {
+        var stops = route.route.map(function(s){return $.stops[s[0]]});
+        
+        $.get(route.routeFile, function (data) {
+          var flightPath = new google.maps.Polyline({
+            path: data.map(function(p){return new google.maps.LatLng(p[0],p[1])}),
+            strokeColor: route.color,
+            strokeOpacity: 1.0,
+            strokeWeight: 5,
+            map: $.map});
+        }, 'json');
+      });
+      
+      data.centers.forEach(function (center) {
+        var pos = new google.maps.LatLng(center[0][0], center[0][1]);
+        var marker = new google.maps.Marker({
+            icon: helpy,
+            position: pos,
+            title: center[1],
+            map: $.map});
+        
+        google.maps.event.addListener(marker, 'click', function() {
+          var body = '<h2><a href="http://phlvisitorcenter.com/attraction/' + center[2] + '" target="_blank">' + center[1] + '</a></h2>';
+          
+          $.popup.content = '<div class="popup">' + body + '</div>';
+          $.popup.open($.map, marker);
+          
+          $.routeTo(pos);
+        });
+      });
+    }, 'json');
+  });
+};
+
+google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+
+<div id="map-canvas"></div>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Phlash Mobile Map</title>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+
+<style>
+  html, body, #map-canvas {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+  }
+</style>
+
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true"></script>
+
+<script>
+$.directionsService = new google.maps.DirectionsService();
+
+function initialize() {
+  $.map = new google.maps.Map($('#map-canvas')[0], {
+    zoom: 16,
+    minZoom: 13,
+    center: new google.maps.LatLng(39.950873, -75.149277),
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  });
+  
+  $.directionsDisplay = new google.maps.DirectionsRenderer({
+    preserveViewport: true,
+    suppressMarkers: true,
+    map: $.map
+  });
+  
+  $.all = [];
+  var flightPath = new google.maps.Polyline({
+    path: [],
+    strokeColor: '#FF0000',
+    strokeOpacity: 1.0,
+    strokeWeight: 2
+  });
+  flightPath.setMap($.map);
+  
+  google.maps.event.addListener($.map, 'click', function (event) {
+    if ($.last) {
+      var request = {
+        origin: $.last,
+        destination: event.latLng,
+        avoidHighways: true,
+        travelMode: google.maps.TravelMode.DRIVING
+      };
+      
+      $.directionsService.route(request, function(response, status) {
+        if (status == google.maps.DirectionsStatus.OK) {
+          var legs = JSON.parse(JSON.stringify(response.routes[0])).legs[0].steps.map(function(x){return x.path});
+          for (var i = 0; i < legs.length - 1; i++)
+            legs[i].pop();
+          
+          var merged = [];
+          merged = merged.concat.apply(merged, legs);
+          merged = merged.map(function(p){return [p.jb,p.kb]});
+          
+          $.all = $.all.concat(merged);
+          console.log(JSON.stringify($.all));
+
+flightPath.setPath($.all.map(function(p){return new google.maps.LatLng(p[0],p[1])}));          
+
+          $.directionsDisplay.setDirections(response);
+        };
+      });
+    };
+    
+    $.last = event.latLng;
+    var marker = new google.maps.Marker({
+      position: event.latLng,
+      map: $.map
+    });
+  });
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+
+</script>
+
+<div id="map-canvas"></div>
