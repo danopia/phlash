@@ -11,10 +11,7 @@
   .popup h2, .popup p { margin: 0; padding: 2px 0; }
   .popup ul { margin: 0; padding-left: 20px; }
   
-  .button { overflow: hidden; text-align: center; position: relative; color: rgb(51, 51, 51); font-family: Arial,sans-serif; -moz-user-select: none; font-size: 13px; background: #fff; padding: 1 6px; margin: 10px; border: 1px solid rgb(113, 123, 135); box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4); min-width: 100px; font-weight: bold; }
-  .button:hover { color: #000; background: -moz-linear-gradient(center top , rgb(255, 255, 255), rgb(230, 230, 230)) repeat scroll 0% 0% transparent; }
-  .button a { display: block; height: 35px; line-height: 30px; text-decoration: none; color: rgb(51, 51, 51) !important; }
-  .button a:hover { color: rgb(0, 0, 0) !important; }
+  .button { padding: 5px; }
 </style>
 
 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
@@ -92,10 +89,9 @@ function initialize() {
     navigator.geolocation.watchPosition($.updateLoc, function(){}, {timeout: 1000, enableHighAccuracy: true});
   };
   
-  var homeControl = $('<div class="button"><a href="..">Home</a></div>');
-  var homeControlDiv = homeControl[0];
-  homeControlDiv.index = 1;
-  $.map.controls[google.maps.ControlPosition.TOP_LEFT].push(homeControlDiv);
+  var homeControl = $('<div class="button"><a href=".."><img src="../assets/logo.png" width="80"></a></div>')[0];
+  homeControl.index = 1;
+  $.map.controls[google.maps.ControlPosition.TOP_LEFT].push(homeControl);
   
   $(function () {
     $.get('data.json', function (data) {
@@ -106,27 +102,28 @@ function initialize() {
         var icon = {
           path: 'M 12 0 C 5.372583 3.5527137e-15 0 5.372583 0 12 L 0 24 L 12 24 C 18.627417 24 24 18.627417 24 12 C 24 5.372583 18.627417 -3.4416914e-15 12 0 z',
           anchor: new google.maps.Point(12, 12),
-          fillColor: data.colors.stopicon[(stop[2] > 180) ? 1 : 0],
+          fillColor: data.colors.stopicon[stop[3]],
           fillOpacity: 0.8,
           strokeColor: "black",
           rotation: stop[2],
-          strokeWeight: stop[4] ? 3 : 1};
+          strokeWeight: stop[6] ? 3 : 1};
           
         var pos = new google.maps.LatLng(stop[1][0], stop[1][1]);
         var marker = new google.maps.Marker({
           icon: icon,
           position: pos,
-          title: stop[3],
+          title: stop[4],
           zIndex: 15,
           map: $.map});
         
-        $.stops[stop[0]] = {coords: stop[1], name: stop[3], marker: marker};
+        $.stops[stop[0]] = {coords: stop[1], name: stop[4], marker: marker};
         $.stops[stop[0]].handler = function() {
-          var body = '<h2>Stop ' + stop[0] + ': ' + stop[3] + '</h2>';
+          var body = '<h2>Stop ' + stop[0] + ': ' + stop[4] + '</h2>';
           
-          body += '<p><a href="https://maps.google.com/maps?daddr=Phlash+Stop+' + stop[0] + '+at+' + encodeURIComponent(stop[3]) + '%40' + stop[1][0] + ',' + stop[1][1] + '" target="_blank">Directions</a></p>';
+          body += '<p><a href="https://maps.google.com/maps?daddr=Phlash+Stop+' + stop[0] + '+at+' + encodeURIComponent(stop[4]) + '%40' + stop[1][0] + ',' + stop[1][1] + '" target="_blank">Directions</a></p>';
           
-          if (stop[4]) body += '<p>' + stop[4] + '</p>';
+          body += '<p>' + stop[5].replace(/\n/g, '</p><p>') + '</p>';
+          if (stop[6]) body += '<p><strong>' + stop[6].replace(/\n/g, '</strong></p><p><strong>') + '</strong></p>';
           
           body += '<p>Nearby:</p><ul>';
           $.data.pois.forEach(function (poi) {
@@ -151,32 +148,20 @@ function initialize() {
         data.stops.forEach(function (stop) {
           var icon = {
             path: texts[stop[0] - 1],
-            strokeWeight: 1,
-            strokeColor: 'black'};
-          var icon2 = {
-            path: texts[stop[0] - 1],
             strokeWeight: 0,
             fillOpacity: 1,
-            fillColor: data.colors.stopnumb};
+            fillColor: data.colors.stopnumb[stop[3]]};
             
           var pos = new google.maps.LatLng(stop[1][0], stop[1][1]);
-          var marker1 = new google.maps.Marker({
+          var marker = new google.maps.Marker({
             icon: icon,
             position: pos,
-            title: stop[3],
-            zIndex: 20,
-            clickable: false,
-            map: $.map});
-          var marker2 = new google.maps.Marker({
-            icon: icon2,
-            position: pos,
-            title: stop[3],
+            title: stop[4],
             zIndex: 25,
             clickable: false,
             map: $.map});
           
-          $.stops[stop[0]].markerNumb1 = marker1;
-          $.stops[stop[0]].markerNumb2 = marker2;
+          $.stops[stop[0]].markerNumb = marker;
         });
       });
       

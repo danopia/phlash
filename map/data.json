@@ -47,25 +47,25 @@
   [[2, 18],"U.S. Mint","http://www.usmint.gov"]],
   
  "stops":[
-  [ 1,[39.947986,-75.140626],180,"Penn's Landing"],
-  [ 2,[39.950739,-75.149684], 50,"6th & Market Sts"],
-  [ 3,[39.951999,-75.159585], 50,"12th & Market Sts"],
-  [ 4,[39.953885,-75.166075], 60,"16th St & John F. Kennedy Blvd."],
-  [ 5,[39.957225,-75.169365], 90,"18th St & The Benjamin Franklin Parkway"],
-  [ 6,[39.961211,-75.174455], 90,"22nd St & The Benjamin Franklin Parkway"],
-  [ 7,[39.967300,-75.173752], 45,"22nd St & Fairmount Ave"],
-  [ 8,[39.967450,-75.179800],280,"Fairmount & Pennsylvania Aves"],
-  [ 9,[39.966380,-75.182110],180,"Philadelphia Museum of Art","Use transfer vehicle here for stops 10, 11, and 12.</p><p>First transfer 10:30 a.m., last transfer 5:30 p.m."],
-  [10,[39.974959,-75.197468], 45,"34th St & Girard Ave"],
-  [11,[39.978786,-75.209793],260,"Avenue of the Republic"],
-  [12,[39.974790,-75.197481],225,"34th St & Girard Ave"],
-  [13,[39.964778,-75.179337],  0,"Eakins Oval"],
-  [14,[39.960989,-75.175308],270,"22nd St & The Benjamin Franklin Parkway"],
-  [15,[39.957315,-75.170572],240,"18th St & The Benjamin Franklin Parkway"],
-  [16,[39.954933,-75.166636],270,"16th St & The Benjamin Franklin Parkway"],
-  [17,[39.951844,-75.160087],230,"12th & Market Sts"],
-  [18,[39.950716,-75.150891],230,"6th & Market Sts"],
-  [19,[39.949912,-75.144023],230,"2nd & Market Sts"]],
+  [ 1,[39.947986,-75.140626],180,0,"Penn's Landing","First pickup 10:00 am\nLast pickup 5:30 pm"],
+  [ 2,[39.950739,-75.149684], 50,0,"6th & Market Sts","First pickup 10:05 am\nLast pickup 5:35 pm"],
+  [ 3,[39.951999,-75.159585], 50,0,"12th & Market Sts","First pickup 10:07 am\nLast pickup 5:37 pm"],
+  [ 4,[39.953885,-75.166075], 60,0,"16th St & John F. Kennedy Blvd.","First pickup 10:10 am\nLast pickup 5:40 pm"],
+  [ 5,[39.957225,-75.169365], 90,0,"18th St & The Benjamin Franklin Parkway","First pickup 10:12 am\nLast pickup 5:42 pm"],
+  [ 6,[39.961211,-75.174455], 90,0,"22nd St & The Benjamin Franklin Parkway","First pickup 10:14 am\nLast pickup 5:44 pm"],
+  [ 7,[39.967300,-75.173752], 45,0,"22nd St & Fairmount Ave","First pickup 10:17 am\nLast pickup 5:47 pm"],
+  [ 8,[39.967450,-75.179800],280,0,"Fairmount & Pennsylvania Aves","First pickup 10:19 am\nLast pickup 5:49 pm"],
+  [ 9,[39.966380,-75.182110],180,1,"Philadelphia Museum of Art","First pickup 10:22 am\nLast pickup 5:52 pm","Use transfer vehicle here for stops 10, 11, and 12.\nFirst transfer 10:30 a.m., last transfer 5:30 p.m."],
+  [10,[39.974959,-75.197468], 45,0,"34th St & Girard Ave","First pickup 10:35 am\nLast pickup 5:35 pm"],
+  [11,[39.978786,-75.209793],260,1,"Avenue of the Republic","First pickup 10:40 am\nLast pickup 5:40 pm"],
+  [12,[39.974790,-75.197481],225,1,"34th St & Girard Ave","First pickup 10:45 am\nLast pickup 5:45 pm"],
+  [13,[39.964778,-75.179337],  0,1,"Eakins Oval","First pickup 10:26 am\nLast pickup 5:56 pm"],
+  [14,[39.960989,-75.175308],270,1,"22nd St & The Benjamin Franklin Parkway","First pickup 10:28 am\nLast pickup 5:58 pm"],
+  [15,[39.957315,-75.170572],240,1,"18th St & The Benjamin Franklin Parkway","First pickup 10:02 am\nLast pickup 6:02 pm"],
+  [16,[39.954933,-75.166636],270,1,"16th St & The Benjamin Franklin Parkway","First pickup 10:05 am\nLast pickup 6:05 pm"],
+  [17,[39.951844,-75.160087],230,1,"12th & Market Sts","First pickup 10:10 am\nLast pickup 6:10 pm"],
+  [18,[39.950716,-75.150891],230,1,"6th & Market Sts","First pickup 10:13 am\nLast pickup 6:13 pm"],
+  [19,[39.949912,-75.144023],230,1,"2nd & Market Sts","First pickup 10:15 am\nLast pickup 6:15 pm"]],
   
  "routes":[
   {"name":"Center City Loop",
@@ -91,7 +91,7 @@
   [[39.95411, -75.16618 ],"Fairmount Park Welcome Center","fairmount-park-welcome-center"]],
  
  "colors":{
-  "stopicon":["#ffd900","#f33"],
-  "stopnumb":"#ab2083"}
+  "stopicon":["#ffd900","#ab2083"],
+  "stopnumb":["#ab2083","#ffd900"]}
 }
 
